@@ -1,0 +1,45 @@
+﻿@model LoginModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Local</title>
+</head>
+<link rel="stylesheet" href="~/css/app.css">
+<div class="container" align="middle" style="height: 100vh;">
+    <div class="d-flex justify-content-center w-100 h-100">
+        <div class="frame align-self-center col-md-3">
+            <div class="logo">
+                <img src="C:\Users\v.saltykov\Pictures\2.png" />
+            </div>
+            <div class="header">Авторизация</div>
+            <div>Пожалуйста, заполните все формы для авторизации.</div>
+
+            <div>
+                <label asp-for="Login"><b>Логин</b></label>
+            </div>
+            <div>
+                <input type="text" asp-for="Login" placeholder="Введите логин" required>
+            </div>
+
+            <div>
+                <label asp-for="Password"><b>Пароль</b></label>
+            </div>
+            <div>
+                <input type="text" asp-for="Password" placeholder="Введите пароль">
+            </div>
+
+            <div>
+                <input type="submit" class="authbtn" value="Авторизоваться">
+            </div>
+
+            <div>
+                <form method="post" asp-area="" asp-controller="User" asp-action="Register">
+                    <button type="submit" class="regbtn">Регистрация</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

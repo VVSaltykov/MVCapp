@@ -1,0 +1,43 @@
+﻿@model RegisterModel
+
+<!DOCTYPE html>
+<html>
+<h1>@ViewData["Title"]</h1>
+<head>
+    <meta charset="utf-8">
+    <title>Local</title>
+</head>
+<form asp-action="Register" asp-controller="User">
+<link rel="stylesheet" href="~/css/app.css">
+<div class="container" align="middle" style="height: 100vh;">
+    <div class="d-flex justify-content-center w-100 h-100">
+        <div class="frame align-self-center col-md-8">
+            <div class="logo">
+                <img src="" />
+            </div>
+            <div class="header">Регистрация</div>
+            <div>Пожалуйста, заполните все формы для регистрации.</div>
+                <div>
+                    <label asp-for="Login"><b>Логин</b></label>
+                </div>
+                <div>
+                    <input type="text" asp-for="Login" placeholder="Введите логин">
+                </div>
+
+                <div>
+                    <label aso-for="Password"><b>Пароль</b></label>
+                </div>
+                <div>
+                    <input type="text" asp-for="Password" placeholder="Введите пароль">
+                </div>
+
+                <div>
+                    <form method="post" asp-area="" asp-controller="User" asp-action="Login">
+                        <input type="submit" class="regbtn" value="Зарегистрироваться">
+                    </form>
+                </div>
+        </div>
+    </div>
+</div>
+</form>
+</html>
