@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MVCapp.Models;
 
-namespace ProMVC
+namespace MVCapp
 {
     public class ApplicationContext: DbContext
     {
