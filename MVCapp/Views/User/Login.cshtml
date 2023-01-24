@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <title>Local</title>
 </head>
+<form asp-action="Login" asp-controller="User">
 <link rel="stylesheet" href="~/css/app.css">
 <div class="container" align="middle" style="height: 100vh;">
     <div class="d-flex justify-content-center w-100 h-100">
@@ -21,6 +22,7 @@
             </div>
             <div>
                 <input type="text" asp-for="Login" placeholder="Введите логин" required>
+                <span asp-validation-for="Login" />
             </div>
 
             <div>
@@ -28,10 +30,13 @@
             </div>
             <div>
                 <input type="text" asp-for="Password" placeholder="Введите пароль">
+                <span asp-validation-for="Password" />
             </div>
 
             <div>
+                <form method="post" asp-area="" asp-controller="User" asp-action="Login">
                 <input type="submit" class="authbtn" value="Авторизоваться">
+                </form>
             </div>
 
             <div>
@@ -42,4 +47,5 @@
         </div>
     </div>
 </div>
+</form>
 </html>

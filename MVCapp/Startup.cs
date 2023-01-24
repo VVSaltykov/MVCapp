@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using MVCapp.Controllers;
 using MVCapp.Interfaces;
 using ProMVC.Repositories;
 using System;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-
 namespace MVCapp
 {
     public class Startup
@@ -26,9 +27,15 @@ namespace MVCapp
         {
             var builder = WebApplication.CreateBuilder();
 
-            string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+            string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => //CookieAuthenticationOptions
+                {
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/User/Login");
+                });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -48,8 +55,8 @@ namespace MVCapp
             app.UseStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.MapControllerRoute(
                 name: "default",

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using MVCapp.Exceptions;
+using MVCapp.Interfaces;
 using MVCapp.Models;
 using System.Security.Claims;
-using MVCapp.Interfaces;
-using MVCapp.Exceptions;
+using System.Security.Cryptography;
 
 namespace MVCapp.Controllers
 {
@@ -29,22 +31,32 @@ namespace MVCapp.Controllers
         }
         [Route("~/User/Register")]
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterModel registerModel)
         {
             if (ModelState.IsValid)
             {
+                User user = new();
                 if (await _IUser.UserIsInDatabase(registerModel))
                 {
                     ModelState.AddModelError("", "Некорректные логин и(или) пароль");
                 }
                 else
                 {
-                    User user = new User { Login = registerModel.Login, Password = registerModel.Password };
+                    byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
+
+                    user.Login = registerModel.Login;
+                    user.Password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                        password: registerModel.Password!,
+                        salt: salt,
+                        prf: KeyDerivationPrf.HMACSHA256,
+                        iterationCount: 100000,
+                        numBytesRequested: 256 / 8));
+
                     await _IUser.AddNewUser(user);
 
-                    //await Authenticate(user);
-                    //HttpContext.Response.Cookies.Append("id", user.Id.ToString());
+                    await Authenticate(user);
+                    HttpContext.Response.Cookies.Append("id", user.Id.ToString());
 
                     return Redirect("~/");
                 }
@@ -62,7 +74,7 @@ namespace MVCapp.Controllers
         [Route("~/User/Login/{ReturnUrl?}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel loginModel, string ReturnUrl)
+        public async Task<IActionResult> Login(LoginModel loginModel)
         {
             if (ModelState.IsValid)
             {
@@ -72,7 +84,7 @@ namespace MVCapp.Controllers
                     await Authenticate(user);
                     HttpContext.Response.Cookies.Append("id", user.Id.ToString());
 
-                    return Redirect(ReturnUrl ?? "~/");
+                    return Redirect("~/");
                 }
                 catch (NotFoundException)
                 {

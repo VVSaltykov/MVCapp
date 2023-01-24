@@ -21,8 +21,7 @@ namespace ProMVC.Repositories
         }
         public async Task<User> GetUserByLoginModelAsync(LoginModel loginModel)
         {
-            User user = await appContext.Users.FirstOrDefaultAsync(u => u.Login == loginModel.Login && u.Password == loginModel.Password);
-            appContext.Users.ToList();
+            User user = await appContext.Users.FirstOrDefaultAsync(u => u.Login == loginModel.Login);
             return user;
         }
         public async Task<bool> UserIsInDatabase(RegisterModel registerModel)
@@ -32,7 +31,6 @@ namespace ProMVC.Repositories
             {
                 return false;
             }
-            appContext.Users.ToList();
             return true;
         }
         public async Task<User> GetUserByIdAsync(int userId)
