@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using MVCapp.Exceptions;
 using MVCapp.Interfaces;
 using MVCapp.Models;
+using MVCapp.Repositories;
+using ProMVC.Repositories;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
@@ -16,11 +18,6 @@ namespace MVCapp.Controllers
         public UserController(IUser _IUser)
         {
             this._IUser = _IUser;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
         }
 
         [Route("~/User/Register")]
@@ -43,7 +40,7 @@ namespace MVCapp.Controllers
                 }
                 else
                 {
-                    byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
+                    byte[] salt = { 1, 2, 3 };
 
                     user.Login = registerModel.Login;
                     user.Password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -54,7 +51,7 @@ namespace MVCapp.Controllers
                         numBytesRequested: 256 / 8));
 
                     await _IUser.AddNewUser(user);
-
+                    
                     await Authenticate(user);
                     HttpContext.Response.Cookies.Append("id", user.Id.ToString());
 
@@ -64,7 +61,6 @@ namespace MVCapp.Controllers
             return View(registerModel);
         }
 
-        [Route("~/User/Login")]
         [HttpGet]
         public IActionResult Login()
         {
@@ -84,7 +80,7 @@ namespace MVCapp.Controllers
                     await Authenticate(user);
                     HttpContext.Response.Cookies.Append("id", user.Id.ToString());
 
-                    return Redirect("~/");
+                    return Redirect("~/Home/Index");
                 }
                 catch (NotFoundException)
                 {
@@ -94,13 +90,13 @@ namespace MVCapp.Controllers
             return View(loginModel);
         }
 
-        /*[Route("~/User/Logout")]
+        [Route("~/User/Logout")]
         public IActionResult Logout()
         {
             Response.Cookies.Delete(".AspNetCore.Cookies");
             Response.Cookies.Delete("id");
-            return Redirect("~/Index");
-        }*/
+            return Redirect("~/User/Login");
+        }
 
         private async Task Authenticate(User user)
         {

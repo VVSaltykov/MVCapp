@@ -1,4 +1,7 @@
 ﻿@model LoginModel
+@{
+    Layout = null;
+}
 
 <!DOCTYPE html>
 <html>
@@ -34,7 +37,7 @@
             </div>
 
             <div>
-                <form method="post" asp-area="" asp-controller="User" asp-action="Login">
+                <form method="post" asp-area="" asp-controller="Home" asp-action="Index">
                 <input type="submit" class="authbtn" value="Авторизоваться">
                 </form>
             </div>
