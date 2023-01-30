@@ -36,7 +36,7 @@ namespace MVCapp.Controllers
                 User user = new();
                 if (await _IUser.UserIsInDatabase(registerModel))
                 {
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                    ModelState.AddModelError("", "Такой пользователь уже существует!");
                 }
                 else
                 {

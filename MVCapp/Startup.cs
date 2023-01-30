@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using MVCapp.Controllers;
 using MVCapp.Interfaces;
 using ProMVC.Repositories;
-using System;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 namespace MVCapp
 {
@@ -34,10 +30,11 @@ namespace MVCapp
                 });
 
             // Add services to the container.
-            services.AddControllersWithViews(options => {
+            services.AddControllersWithViews(options =>
+            {
                 options.MaxModelValidationErrors = 50;
                 options.EnableEndpointRouting = false;
-                });
+            });
             services.AddTransient<IUser, UserRepository>();
             services.AddTransient<UserController>();
         }
