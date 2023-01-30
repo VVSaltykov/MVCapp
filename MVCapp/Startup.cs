@@ -38,7 +38,7 @@ namespace MVCapp
                 });
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options => options.MaxModelValidationErrors = 50);
             builder.Services.AddTransient<IUser, UserRepository>();
             builder.Services.AddTransient<UserController>();
 

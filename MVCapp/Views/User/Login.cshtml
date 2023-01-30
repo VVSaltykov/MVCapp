@@ -19,21 +19,21 @@
             </div>
             <div class="header">Авторизация</div>
             <div>Пожалуйста, заполните все формы для авторизации.</div>
-
+            <div class="validation" asp-validation-summary="ModelOnly"></div>
             <div>
                 <label asp-for="Login"><b>Логин</b></label>
             </div>
             <div>
-                <input type="text" asp-for="Login" placeholder="Введите логин" required>
                 <span asp-validation-for="Login" />
+                <input type="text" asp-for="Login" placeholder="Введите логин" required>
             </div>
 
             <div>
                 <label asp-for="Password"><b>Пароль</b></label>
             </div>
             <div>
-                <input type="text" asp-for="Password" placeholder="Введите пароль">
                 <span asp-validation-for="Password" />
+                <input type="text" asp-for="Password" placeholder="Введите пароль">
             </div>
 
             <div>

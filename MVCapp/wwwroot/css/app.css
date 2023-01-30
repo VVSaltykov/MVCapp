@@ -2,7 +2,7 @@
 
 /* Add padding to containers */
 .container {
-  padding: 100pt;
+  padding: 150px;
 }
 
 .frame{
@@ -81,3 +81,10 @@ a {
     width: 100%;
     text-align: center;
   }
+
+.validation{
+    color: red;
+    font-weight: bold;
+    align-content:center;
+    text-align: center;
+}

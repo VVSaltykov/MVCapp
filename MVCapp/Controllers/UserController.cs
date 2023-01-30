@@ -77,10 +77,17 @@ namespace MVCapp.Controllers
                 try
                 {
                     User user = await _IUser.GetUserByLoginModelAsync(loginModel);
-                    await Authenticate(user);
-                    HttpContext.Response.Cookies.Append("id", user.Id.ToString());
+                    if (user != null)
+                    {
+                        await Authenticate(user);
+                        HttpContext.Response.Cookies.Append("id", user.Id.ToString());
 
-                    return Redirect("~/Home/Index");
+                        return Redirect("~/Home/Index");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                    }
                 }
                 catch (NotFoundException)
                 {
