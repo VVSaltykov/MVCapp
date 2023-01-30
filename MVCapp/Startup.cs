@@ -23,50 +23,39 @@ namespace MVCapp
                 Build();
         }
 
-        public void ConfigureServices()
+        public void ConfigureServices(IServiceCollection services)
         {
-            var builder = WebApplication.CreateBuilder();
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(_confString.GetConnectionString("DefaultConnection")));
 
-            string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
-
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => //CookieAuthenticationOptions
                 {
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/User/Login");
                 });
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews(options => options.MaxModelValidationErrors = 50);
-            builder.Services.AddTransient<IUser, UserRepository>();
-            builder.Services.AddTransient<UserController>();
+            services.AddControllersWithViews(options => {
+                options.MaxModelValidationErrors = 50;
+                options.EnableEndpointRouting = false;
+                });
+            services.AddTransient<IUser, UserRepository>();
+            services.AddTransient<UserController>();
+        }
 
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseStatusCodePages();
             app.UseRouting();
             app.UseAuthorization();
             app.UseAuthentication();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=User}/{action=Login}/{id?}");
-
-            app.Run();
-        }
-
-        public async void Configure()
-        {
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=User}/{action=Login}/{id?}");
+            });
         }
     }
 }
