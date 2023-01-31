@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using MVCapp.Controllers;
 using MVCapp.Interfaces;
+using MVCapp.Models;
+using MVCapp.Repositories;
 using ProMVC.Repositories;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 namespace MVCapp
@@ -37,6 +39,8 @@ namespace MVCapp
             });
             services.AddTransient<IUser, UserRepository>();
             services.AddTransient<UserController>();
+            services.AddTransient<PhotoRepository>();
+            services.AddTransient<PhotoController>();
         }
 
         public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
