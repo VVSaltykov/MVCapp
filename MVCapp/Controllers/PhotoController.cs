@@ -1,7 +1,6 @@
 ﻿using MVCapp.Models;
 using MVCapp.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 
 namespace MVCapp.Controllers
 {
@@ -9,28 +8,25 @@ namespace MVCapp.Controllers
     {
         private readonly ApplicationContext applicationContext;
         IWebHostEnvironment _appEnvironment;
-        private readonly PhotoRepository fileRepository;
+        private readonly PhotoRepository photoRepository;
 
-        public PhotoController(PhotoRepository fileRepository, ApplicationContext context, IWebHostEnvironment appEnvironment)
+        public PhotoController(PhotoRepository photoRepository, ApplicationContext context, IWebHostEnvironment appEnvironment)
         {
-            this.fileRepository = fileRepository;
+            this.photoRepository = photoRepository;
             this._appEnvironment = appEnvironment;
             this.applicationContext = context;
         }
 
+        [HttpGet]
         public IActionResult Photo()
         {
-            //if (applicationContext.Photos.Any())
-            //{
-            //    return View(applicationContext.Photos.ToList());
-            //}
-            return View();
+            return View(applicationContext.Photos.ToList());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(IFormFile uploadImage)
+        public async Task<IActionResult> AddPhoto(IFormFile uploadImage)
         {
-            if (ModelState.IsValid && uploadImage != null)
+            if (uploadImage != null)
             {
                 string path = "/Photos/" + uploadImage.FileName;
 
@@ -39,7 +35,7 @@ namespace MVCapp.Controllers
                     await uploadImage.CopyToAsync(fileStream);
                 }
                 Photos photos = new Photos { PhotoName = uploadImage.FileName, Path = path };
-                await fileRepository.AddPhotoAsync(photos);
+                await photoRepository.AddPhotoAsync(photos);
             }
             return RedirectToAction("Photo");
         }

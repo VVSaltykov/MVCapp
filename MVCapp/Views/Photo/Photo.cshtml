@@ -2,9 +2,10 @@
 @{
     ViewData["Title"] = "Добавление файла";
 }
+
 <h3>Выберите файл для загрузки</h3>
-<form asp-action="Create" asp-controller="Photo" method="post" enctype="multipart/form-data">
-    <input type="file" name="uploadedFile" /><br>
+<form method="post" asp-controller="Photo" asp-action="AddPhoto" enctype="multipart/form-data">
+    <input type="file" name="uploadImage" /><br>
     <input type="submit" value="Загрузить" />
 </form>
 
@@ -13,3 +14,4 @@
 {
     <p><img src="@Url.Content(f.Path)"></p>
 }
+

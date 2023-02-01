@@ -3,44 +3,43 @@ using Microsoft.AspNetCore.Mvc;
 using MVCapp.Interfaces;
 using MVCapp.Models;
 using MVCapp.Repositories;
+using System.IO;
 
 namespace MVCapp.Controllers
 {
     public class HomeController : Controller 
     {
-        private readonly BaseRepository<Home> baseRepository;
-        
-        public HomeController(BaseRepository<Home> baseRepository)
+        ApplicationContext _context;
+        IWebHostEnvironment _appEnvironment;
+
+        public HomeController(ApplicationContext context, IWebHostEnvironment appEnvironment)
         {
-            this.baseRepository = baseRepository;
+            _context = context;
+            _appEnvironment = appEnvironment;
         }
-        public ActionResult Index()
+
+        public IActionResult Index()
         {
-            return View();
+            return View(_context.Photos.ToList());
         }
-        [Route("~/Home/Index")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(RegisterModel registerModel)
+        public async Task<IActionResult> AddFile(IFormFile uploadedFile)
         {
-            if (ModelState.IsValid)
+            if (uploadedFile != null)
             {
-                Home home =new Home();
-                byte[] salt = { 1, 2, 3 };
-
-                home.Login = registerModel.Login;
-                home.Password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                    password: registerModel.Password!,
-                    salt: salt,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 100000,
-                    numBytesRequested: 256 / 8));
-
-                await baseRepository.AddToDatabase(home);
-
-                return Redirect("~/");
+                // путь к папке Files
+                string path = "/Files/" + uploadedFile.FileName;
+                // сохраняем файл в папку Files в каталоге wwwroot
+                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                {
+                    await uploadedFile.CopyToAsync(fileStream);
+                }
+                Photos file = new Photos { PhotoName = uploadedFile.FileName, Path = path };
+                _context.Photos.Add(file);
+                _context.SaveChanges();
             }
-            return View(registerModel);
+
+            return RedirectToAction("Index");
         }
     }
 }
