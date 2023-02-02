@@ -1,6 +1,8 @@
-﻿using MVCapp.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using MVCapp.Models;
 using MVCapp.Repositories;
-using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace MVCapp.Controllers
 {
@@ -30,10 +32,17 @@ namespace MVCapp.Controllers
             {
                 string path = "/Photos/" + uploadImage.FileName;
 
-                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                var image = Image.FromStream(uploadImage.OpenReadStream());
+                var resized = new Bitmap(image, new Size(1920, 1080));
+                using var imageStream = new MemoryStream();
+                resized.Save(imageStream, ImageFormat.Jpeg);
+                var imageBytes = imageStream.ToArray();
+
+                using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
                 {
-                    await uploadImage.CopyToAsync(fileStream);
+                    stream.Write(imageBytes, 0, imageBytes.Length);
                 }
+
                 Photos photos = new Photos { PhotoName = uploadImage.FileName, Path = path };
                 await photoRepository.AddPhotoAsync(photos);
             }

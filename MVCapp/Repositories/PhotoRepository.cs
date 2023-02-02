@@ -16,5 +16,10 @@ namespace MVCapp.Repositories
             applicationContext.Photos.Add(photo);
             await applicationContext.SaveChangesAsync();
         }
+
+        public async Task ResizePhoto(Photos photo)
+        {
+            
+        }
     }
 }
