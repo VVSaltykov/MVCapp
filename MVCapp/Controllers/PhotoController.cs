@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Mvc;
 using MVCapp.Models;
 using MVCapp.Repositories;
 using System.Drawing;
@@ -42,8 +43,18 @@ namespace MVCapp.Controllers
                 {
                     stream.Write(imageBytes, 0, imageBytes.Length);
                 }
+                byte[] salt = { 1, 2, 3 };
 
-                Photos photos = new Photos { PhotoName = uploadImage.FileName, Path = path };
+                Photos photos = new Photos { 
+                    PhotoName = uploadImage.FileName,
+                    Path = path,
+                    SecondName = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                    password: uploadImage.FileName!,
+                    salt: salt,
+                    prf: KeyDerivationPrf.HMACSHA256,
+                    iterationCount: 100000,
+                    numBytesRequested: 256 / 8))
+                    };
                 await photoRepository.AddPhotoAsync(photos);
             }
             return RedirectToAction("Photo");
