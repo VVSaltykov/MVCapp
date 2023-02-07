@@ -27,7 +27,7 @@ namespace MVCapp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPhoto(IFormFile uploadImage)
+        public async Task<IActionResult> Upload(IFormFile uploadImage)
         {
             if (uploadImage != null)
             {
@@ -45,7 +45,8 @@ namespace MVCapp.Controllers
                 }
                 byte[] salt = { 1, 2, 3 };
 
-                Photos photos = new Photos { 
+                Photo photos = new Photo
+                {
                     PhotoName = uploadImage.FileName,
                     Path = path,
                     SecondName = Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -54,10 +55,52 @@ namespace MVCapp.Controllers
                     prf: KeyDerivationPrf.HMACSHA256,
                     iterationCount: 100000,
                     numBytesRequested: 256 / 8))
-                    };
+                };
                 await photoRepository.AddPhotoAsync(photos);
             }
             return RedirectToAction("Photo");
+        }
+        public async Task<IActionResult> Download(string filename)
+        {
+            if (filename == null)
+                return Content("filename is not availble");
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), _appEnvironment.WebRootPath, "Photos", filename);
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            return File(memory, GetContentType(path), Path.GetFileName(path));
+        }
+
+        // Get content type
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+        // Get mime types
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
         }
     }
 }

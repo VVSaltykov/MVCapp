@@ -11,13 +11,13 @@ namespace MVCapp.Repositories
             this.applicationContext = applicationContext;
         }
 
-        public async Task AddPhotoAsync(Photos photo)
+        public async Task AddPhotoAsync(Photo photo)
         {
             applicationContext.Photos.Add(photo);
             await applicationContext.SaveChangesAsync();
         }
 
-        public async Task ResizePhoto(Photos photo)
+        public async Task ResizePhoto(Photo photo)
         {
             
         }

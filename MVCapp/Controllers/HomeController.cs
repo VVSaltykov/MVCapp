@@ -34,7 +34,7 @@ namespace MVCapp.Controllers
                 {
                     await uploadedFile.CopyToAsync(fileStream);
                 }
-                Photos file = new Photos { PhotoName = uploadedFile.FileName, Path = path };
+                Models.Photo file = new Models.Photo { PhotoName = uploadedFile.FileName, Path = path };
                 _context.Photos.Add(file);
                 _context.SaveChanges();
             }

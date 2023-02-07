@@ -1,17 +1,25 @@
-﻿@model IEnumerable<MVCapp.Models.Photos>
+﻿@using System.Web.Helpers
+@model IEnumerable<MVCapp.Models.Photo>
 @{
     ViewData["Title"] = "Добавление файла";
 }
 
 <h3>Выберите файл для загрузки</h3>
-<form method="post" asp-controller="Photo" asp-action="AddPhoto" enctype="multipart/form-data">
+<form method="post" asp-controller="Photo" asp-action="Upload" enctype="multipart/form-data">
     <input type="file" name="uploadImage" /><br>
     <input type="submit" value="Загрузить" />
 </form>
 
-<h3>Все файлы</h3>
-@foreach (var f in Model)
-{
-    <p><img src="@Url.Content(f.Path)"></p>
-}
+<p style="margin-top: 50px">List of Files</p>
+<ul>
+	@foreach (var item in Model)
+	{
+		<li>
+			<a asp-controller="Photo" asp-action="Download"
+			   asp-route-filename="@item.PhotoName">
+				@item.PhotoName
+			</a>
+		</li>
+	}
+</ul>
 

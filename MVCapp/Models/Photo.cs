@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MVCapp.Models
 {
-    public class Photos
+    public class Photo
     {
         [Key]
         public int PhotoId { get; set; }
