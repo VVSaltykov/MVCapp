@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using MVCapp.Models;
 using MVCapp.Repositories;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Security.Cryptography;
 
 namespace MVCapp.Controllers
 {
@@ -12,6 +14,8 @@ namespace MVCapp.Controllers
         private readonly ApplicationContext applicationContext;
         IWebHostEnvironment _appEnvironment;
         private readonly PhotoRepository photoRepository;
+        private static Random random = new Random();
+
 
         public PhotoController(PhotoRepository photoRepository, ApplicationContext context, IWebHostEnvironment appEnvironment)
         {
@@ -31,7 +35,27 @@ namespace MVCapp.Controllers
         {
             if (uploadImage != null)
             {
-                string path = "/Photos/" + uploadImage.FileName;
+                const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                var stringChars = new char[16];
+                for (int i = 0; i < stringChars.Length; i++)
+                {
+                    stringChars[i] = chars[random.Next(chars.Length)];
+                }
+
+                var finalString = new String(stringChars);
+                finalString = $"{finalString}.jpeg";
+
+                if (await photoRepository.FileInDataBase(finalString))
+                {
+                    for (int i = 0; i < stringChars.Length; i++)
+                    {
+                        stringChars[i] = chars[random.Next(chars.Length)];
+                    }
+
+                    finalString = new String(stringChars);
+                    finalString = $"{finalString}.jpeg";
+                }
+                string path = "/Photos/" + finalString;
 
                 var image = Image.FromStream(uploadImage.OpenReadStream());
                 var resized = new Bitmap(image, new Size(1920, 1080));
@@ -43,37 +67,31 @@ namespace MVCapp.Controllers
                 {
                     stream.Write(imageBytes, 0, imageBytes.Length);
                 }
-                byte[] salt = { 1, 2, 3 };
 
                 Photo photos = new Photo
                 {
                     PhotoName = uploadImage.FileName,
-                    Path = path,
-                    SecondName = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                    password: uploadImage.FileName!,
-                    salt: salt,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 100000,
-                    numBytesRequested: 256 / 8))
+                    Path = path
                 };
                 await photoRepository.AddPhotoAsync(photos);
             }
             return RedirectToAction("Photo");
         }
-        public async Task<IActionResult> Download(string filename)
+        public async Task<IActionResult> Download(string path)
         {
-            if (filename == null)
+            var photo = await photoRepository.GetFileAsync(path);
+            if (photo.PhotoName == null)
                 return Content("filename is not availble");
 
-            var path = Path.Combine(Directory.GetCurrentDirectory(), _appEnvironment.WebRootPath, "Photos", filename);
+            var _path = Path.Combine(Directory.GetCurrentDirectory(), _appEnvironment.WebRootPath + path);
 
             var memory = new MemoryStream();
-            using (var stream = new FileStream(path, FileMode.Open))
+            using (var stream = new FileStream(_path, FileMode.Open))
             {
                 await stream.CopyToAsync(memory);
             }
             memory.Position = 0;
-            return File(memory, GetContentType(path), Path.GetFileName(path));
+            return File(memory, GetContentType(_path), Path.GetFileName(photo.PhotoName));
         }
 
         // Get content type

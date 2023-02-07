@@ -1,4 +1,6 @@
-﻿using MVCapp.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using MVCapp.Models;
+using System;
 
 namespace MVCapp.Repositories
 {
@@ -17,9 +19,15 @@ namespace MVCapp.Repositories
             await applicationContext.SaveChangesAsync();
         }
 
-        public async Task ResizePhoto(Photo photo)
+        public async Task<Photo?> GetFileAsync(string path)
         {
-            
+            Photo photo = await applicationContext.Photos.FirstOrDefaultAsync(p => p.Path == path);
+            return photo;
+        }
+        public async Task<bool> FileInDataBase(string path)
+        {
+            Photo photo = await applicationContext.Photos.FirstOrDefaultAsync(p => p.Path == path);
+            return true;
         }
     }
 }

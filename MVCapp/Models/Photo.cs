@@ -9,7 +9,7 @@ namespace MVCapp.Models
         [Key]
         public int PhotoId { get; set; }
         public string? PhotoName { get; set; }
-        public string? SecondName { get; set; }
+        //[Display(Name = "")]
         public string? Path { get; set; }
     }
 }
