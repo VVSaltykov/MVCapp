@@ -46,7 +46,7 @@ namespace MVCapp.Controllers
                     var finalString = new String(stringChars);
                     finalString = string.Concat(finalString, key);
 
-                    if (await fileRepository.FileInDataBase(finalString))
+                    if (!await fileRepository.FileInDataBase(finalString))
                     {
                         for (int i = 0; i < stringChars.Length; i++)
                         {
@@ -84,7 +84,7 @@ namespace MVCapp.Controllers
                     var finalString = new String(stringChars);
                     finalString = string.Concat(finalString, key);
 
-                    if (await fileRepository.FileInDataBase(finalString))
+                    if (!await fileRepository.FileInDataBase(finalString))
                     {
                         for (int i = 0; i < stringChars.Length; i++)
                         {

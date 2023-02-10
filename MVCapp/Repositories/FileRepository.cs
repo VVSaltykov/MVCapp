@@ -29,7 +29,7 @@ namespace MVCapp.Repositories
         public async Task<bool> FileInDataBase(string path)
         {
             File file = await applicationContext.Files.FirstOrDefaultAsync(f => f.Path == path);
-            return false;
+            return true;
         }
         public async Task<byte[]> ResizeImage(Image image)
         {
