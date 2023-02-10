@@ -7,6 +7,6 @@ namespace MVCapp.Models
     {
         public string? PhotoName { get; set; }
         public string? Path { get; set; }
-        public List<Photo> PhotoList { get; set; }
+        public List<File> PhotoList { get; set; }
     }
 }

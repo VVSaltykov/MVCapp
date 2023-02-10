@@ -1,12 +1,12 @@
 ﻿@using System.Web.Helpers
-@model IEnumerable<MVCapp.Models.Photo>
+@model IEnumerable<MVCapp.Models.File>
 @{
     ViewData["Title"] = "Добавление файла";
 }
 
 <h3>Выберите файл для загрузки</h3>
-<form method="post" asp-controller="Photo" asp-action="Upload" enctype="multipart/form-data">
-    <input type="file" name="uploadImage" /><br>
+<form method="post" asp-controller="File" asp-action="Upload" enctype="multipart/form-data">
+    <input type="file" name="uploadFile" /><br>
     <input type="submit" value="Загрузить" />
 </form>
 
@@ -15,11 +15,10 @@
 	@foreach (var item in Model)
 	{
 		<li>
-			<a asp-controller="Photo" asp-action="Download"
+			<a asp-controller="File" asp-action="Download"
 			   asp-route-path="@item.Path">
-				@item.PhotoName
+				@item.FileName
 			</a>
 		</li>
 	}
 </ul>
-

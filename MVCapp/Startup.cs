@@ -39,7 +39,7 @@ namespace MVCapp
             });
             services.AddTransient<IUser, UserRepository>();
             services.AddTransient<UserController>();
-            services.AddTransient<PhotoRepository>();
+            services.AddTransient<FileRepository>();
         }
 
         public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)

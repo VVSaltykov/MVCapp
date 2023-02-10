@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MVCapp.Models;
+using File = MVCapp.Models.File;
 
 namespace MVCapp
 {
     public class ApplicationContext: DbContext
     {
         public DbSet<User> Users { get; set; }
-        public DbSet<Models.Photo> Photos { get; set; }
+        public DbSet<File> Files { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)

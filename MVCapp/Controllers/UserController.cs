@@ -82,7 +82,7 @@ namespace MVCapp.Controllers
                         await Authenticate(user);
                         HttpContext.Response.Cookies.Append("id", user.Id.ToString());
 
-                        return Redirect("~/Photo/Photo");
+                        return Redirect("~/File/File");
                     }
                     else
                     {
