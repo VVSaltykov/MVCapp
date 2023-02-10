@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MVCapp.Models;
 using MVCapp.Repositories;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Security.Cryptography;
 
 namespace MVCapp.Controllers
 {
@@ -58,10 +55,7 @@ namespace MVCapp.Controllers
                 string path = "/Photos/" + finalString;
 
                 var image = Image.FromStream(uploadImage.OpenReadStream());
-                var resized = new Bitmap(image, new Size(1920, 1080));
-                using var imageStream = new MemoryStream();
-                resized.Save(imageStream, ImageFormat.Jpeg);
-                var imageBytes = imageStream.ToArray();
+                var imageBytes = await photoRepository.ResizeImage(image);
 
                 using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
                 {
