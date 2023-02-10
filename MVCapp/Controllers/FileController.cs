@@ -33,6 +33,7 @@ namespace MVCapp.Controllers
             if (uploadFile != null)
             {
                 var type = fileRepository.GetContentType(uploadFile.FileName);
+                var key = fileRepository.GetContentKey(uploadFile.FileName);
                 if (Regex.IsMatch(type, @"image(\w*)"))
                 {
                     const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -43,7 +44,7 @@ namespace MVCapp.Controllers
                     }
 
                     var finalString = new String(stringChars);
-                    finalString = $"{finalString}.jpeg";
+                    finalString = string.Concat(finalString, key);
 
                     if (await fileRepository.FileInDataBase(finalString))
                     {
@@ -53,7 +54,7 @@ namespace MVCapp.Controllers
                         }
 
                         finalString = new String(stringChars);
-                        finalString = $"{finalString}.jpeg";
+                        finalString = string.Concat(finalString, key);
                     }
                     string path = "/Files/" + finalString;
 
@@ -81,7 +82,7 @@ namespace MVCapp.Controllers
                     }
 
                     var finalString = new String(stringChars);
-                    finalString = $"{finalString}.pdf";
+                    finalString = string.Concat(finalString, key);
 
                     if (await fileRepository.FileInDataBase(finalString))
                     {
@@ -91,7 +92,7 @@ namespace MVCapp.Controllers
                         }
 
                         finalString = new String(stringChars);
-                        finalString = $"{finalString}.pdf";
+                        finalString = string.Concat(finalString, key);
                     }
                     string path = "/Files/" + finalString;
 

@@ -57,6 +57,12 @@ namespace MVCapp.Repositories
             var ext = Path.GetExtension(path).ToLowerInvariant();
             return types[ext];
         }
+        public string GetContentKey(string path)
+        {
+            var types = GetMimeTypes();
+            var myKey = types.FirstOrDefault(x => x.Key == Path.GetExtension(path).ToLowerInvariant()).Key;
+            return myKey;
+        }
 
         // Get mime types
         private Dictionary<string, string> GetMimeTypes()
