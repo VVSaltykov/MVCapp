@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MVCapp.Models;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Text.RegularExpressions;
 using File = MVCapp.Models.File;
 
 namespace MVCapp.Repositories
@@ -9,10 +11,13 @@ namespace MVCapp.Repositories
     public class FileRepository
     {
         private readonly ApplicationContext applicationContext;
+        IWebHostEnvironment _appEnvironment;
+        private static Random random = new Random();
 
-        public FileRepository(ApplicationContext applicationContext)
+        public FileRepository(ApplicationContext applicationContext, IWebHostEnvironment appEnvironment)
         {
             this.applicationContext = applicationContext;
+            _appEnvironment = appEnvironment;
         }
 
         public async Task AddFileAsync(File file)
@@ -30,6 +35,85 @@ namespace MVCapp.Repositories
         {
             File file = await applicationContext.Files.FirstOrDefaultAsync(f => f.Path == path);
             return true;
+        }
+        public async Task Upload(IFormFile uploadFile)
+        {
+            var type = GetContentType(uploadFile.FileName);
+            var key = GetContentKey(uploadFile.FileName);
+            if (Regex.IsMatch(type, @"image(\w*)"))
+            {
+                const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                var stringChars = new char[16];
+                for (int i = 0; i < stringChars.Length; i++)
+                {
+                    stringChars[i] = chars[random.Next(chars.Length)];
+                }
+
+                var finalString = new String(stringChars);
+                finalString = string.Concat(finalString, key);
+
+                if (!await FileInDataBase(finalString))
+                {
+                    for (int i = 0; i < stringChars.Length; i++)
+                    {
+                        stringChars[i] = chars[random.Next(chars.Length)];
+                    }
+
+                    finalString = new String(stringChars);
+                    finalString = string.Concat(finalString, key);
+                }
+                string path = "/Files/" + finalString;
+
+                var image = Image.FromStream(uploadFile.OpenReadStream());
+                var imageBytes = await ResizeImage(image);
+                using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
+                {
+                    stream.Write(imageBytes, 0, imageBytes.Length);
+                }
+
+                File file = new File
+                {
+                    FileName = uploadFile.FileName,
+                    Path = path
+                };
+                await AddFileAsync(file);
+            }
+            else
+            {
+                const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                var stringChars = new char[16];
+                for (int i = 0; i < stringChars.Length; i++)
+                {
+                    stringChars[i] = chars[random.Next(chars.Length)];
+                }
+
+                var finalString = new String(stringChars);
+                finalString = string.Concat(finalString, key);
+
+                if (!await FileInDataBase(finalString))
+                {
+                    for (int i = 0; i < stringChars.Length; i++)
+                    {
+                        stringChars[i] = chars[random.Next(chars.Length)];
+                    }
+
+                    finalString = new String(stringChars);
+                    finalString = string.Concat(finalString, key);
+                }
+                string path = "/Files/" + finalString;
+
+                using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
+                {
+                    await uploadFile.CopyToAsync(stream);
+                }
+
+                File file = new File
+                {
+                    FileName = uploadFile.FileName,
+                    Path = path
+                };
+                await AddFileAsync(file);
+            }
         }
         public async Task<byte[]> ResizeImage(Image image)
         {

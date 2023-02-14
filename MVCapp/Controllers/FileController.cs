@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCapp.Repositories;
-using System.Drawing;
-using System.Text;
-using System.Text.RegularExpressions;
-using File = MVCapp.Models.File;
 
 namespace MVCapp.Controllers
 {
@@ -33,82 +29,7 @@ namespace MVCapp.Controllers
         {
             if (uploadFile != null)
             {
-                var type = fileRepository.GetContentType(uploadFile.FileName);
-                var key = fileRepository.GetContentKey(uploadFile.FileName);
-                if (Regex.IsMatch(type, @"image(\w*)"))
-                {
-                    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                    var stringChars = new char[16];
-                    for (int i = 0; i < stringChars.Length; i++)
-                    {
-                        stringChars[i] = chars[random.Next(chars.Length)];
-                    }
-
-                    var finalString = new String(stringChars);
-                    finalString = string.Concat(finalString, key);
-
-                    if (!await fileRepository.FileInDataBase(finalString))
-                    {
-                        for (int i = 0; i < stringChars.Length; i++)
-                        {
-                            stringChars[i] = chars[random.Next(chars.Length)];
-                        }
-
-                        finalString = new String(stringChars);
-                        finalString = string.Concat(finalString, key);
-                    }
-                    string path = "/Files/" + finalString;
-
-                    var image = Image.FromStream(uploadFile.OpenReadStream());
-                    var imageBytes = await fileRepository.ResizeImage(image);
-                    using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
-                    {
-                        stream.Write(imageBytes, 0, imageBytes.Length);
-                    }
-
-                    File files = new File
-                    {
-                        FileName = uploadFile.FileName,
-                        Path = path
-                    };
-                    await fileRepository.AddFileAsync(files);
-                }
-                else
-                {
-                    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                    var stringChars = new char[16];
-                    for (int i = 0; i < stringChars.Length; i++)
-                    {
-                        stringChars[i] = chars[random.Next(chars.Length)];
-                    }
-
-                    var finalString = new String(stringChars);
-                    finalString = string.Concat(finalString, key);
-
-                    if (!await fileRepository.FileInDataBase(finalString))
-                    {
-                        for (int i = 0; i < stringChars.Length; i++)
-                        {
-                            stringChars[i] = chars[random.Next(chars.Length)];
-                        }
-
-                        finalString = new String(stringChars);
-                        finalString = string.Concat(finalString, key);
-                    }
-                    string path = "/Files/" + finalString;
-
-                    using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
-                    {
-                        await uploadFile.CopyToAsync(stream);
-                    }
-
-                    File files = new File
-                    {
-                        FileName = uploadFile.FileName,
-                        Path = path
-                    };
-                    await fileRepository.AddFileAsync(files);
-                }
+                await fileRepository.Upload(uploadFile);
             }
             return RedirectToAction("File");
         }
