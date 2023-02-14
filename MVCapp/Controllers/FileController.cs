@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCapp.Repositories;
 using System.Drawing;
+using System.Text;
 using System.Text.RegularExpressions;
 using File = MVCapp.Models.File;
 
@@ -96,12 +97,9 @@ namespace MVCapp.Controllers
                     }
                     string path = "/Files/" + finalString;
 
-                    using var imageStream = new MemoryStream();
-                    var imageBytes = imageStream.ToArray();
-
                     using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
                     {
-                        stream.Write(imageBytes, 0, imageBytes.Length);
+                        await uploadFile.CopyToAsync(stream);
                     }
 
                     File files = new File
