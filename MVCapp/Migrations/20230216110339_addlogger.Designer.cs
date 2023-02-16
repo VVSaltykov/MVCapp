@@ -4,6 +4,7 @@ using MVCapp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MVCapp.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230216110339_addlogger")]
+    partial class addlogger
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,12 +59,7 @@ namespace MVCapp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Loggers");
                 });
@@ -74,6 +72,9 @@ namespace MVCapp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("LoggerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Login")
                         .HasColumnType("nvarchar(max)");
 
@@ -82,16 +83,21 @@ namespace MVCapp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LoggerId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MVCapp.Models.User", b =>
+                {
+                    b.HasOne("MVCapp.Models.Logger", null)
+                        .WithMany("Users")
+                        .HasForeignKey("LoggerId");
                 });
 
             modelBuilder.Entity("MVCapp.Models.Logger", b =>
                 {
-                    b.HasOne("MVCapp.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

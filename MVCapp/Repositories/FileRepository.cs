@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MVCapp.Models;
-using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
@@ -65,10 +63,20 @@ namespace MVCapp.Repositories
                 string path = "/Files/" + finalString;
 
                 var image = Image.FromStream(uploadFile.OpenReadStream());
-                var imageBytes = await ResizeImage(image);
-                using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
+                if (image.Width > 1920 && image.Height > 1080)
                 {
-                    stream.Write(imageBytes, 0, imageBytes.Length);
+                    var imageBytes = await ResizeImage(image);
+                    using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
+                    {
+                        stream.Write(imageBytes, 0, imageBytes.Length);
+                    }
+                }
+                else
+                {
+                    using (var stream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
+                    {
+                        await uploadFile.CopyToAsync(stream);
+                    }
                 }
 
                 File file = new File
@@ -117,22 +125,11 @@ namespace MVCapp.Repositories
         }
         public async Task<byte[]> ResizeImage(Image image)
         {
-            if (image.Width > 1920 && image.Height > 1080)
-            {
-                var resized = new Bitmap(image, new Size(1920, 1080));
-                using var imageStream = new MemoryStream();
-                resized.Save(imageStream, ImageFormat.Jpeg);
-                var imageBytes = imageStream.ToArray();
-                return imageBytes;
-            }
-            else
-            {
-                var resized = new Bitmap(image, new Size(image.Width, image.Height));
-                using var imageStream = new MemoryStream();
-                resized.Save(imageStream, ImageFormat.Jpeg);
-                var imageBytes = imageStream.ToArray();
-                return imageBytes;
-            }
+            var resized = new Bitmap(image, new Size(1920, 1080));
+            using var imageStream = new MemoryStream();
+            resized.Save(imageStream, ImageFormat.Jpeg);
+            var imageBytes = imageStream.ToArray();
+            return imageBytes;
         }
         // Get content type
         public string GetContentType(string path)

@@ -4,6 +4,7 @@ using MVCapp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MVCapp.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230216111544_updateuserandlogger")]
+    partial class updateuserandlogger
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,11 +90,14 @@ namespace MVCapp.Migrations
 
             modelBuilder.Entity("MVCapp.Models.Logger", b =>
                 {
-                    b.HasOne("MVCapp.Models.User", "User")
-                        .WithMany()
+                    b.HasOne("MVCapp.Models.User", null)
+                        .WithMany("Loggers")
                         .HasForeignKey("UserId");
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("MVCapp.Models.User", b =>
+                {
+                    b.Navigation("Loggers");
                 });
 #pragma warning restore 612, 618
         }

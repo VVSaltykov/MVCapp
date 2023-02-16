@@ -5,6 +5,12 @@ namespace MVCapp.Interfaces
     public interface IUser
     {
         /// <summary>
+        /// Get user by login
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        Task<User> GetUserByLoginAsync(LoginModel loginModel);
+        /// <summary>
         /// Add user to database
         /// </summary>
         /// <param name="user"></param>

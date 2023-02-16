@@ -15,9 +15,11 @@ namespace MVCapp.Controllers
     public class UserController : Controller
     {
         private readonly IUser _IUser;
-        public UserController(IUser _IUser)
+        private readonly LoggerRepository loggerRepository;
+        public UserController(IUser _IUser, LoggerRepository loggerRepository)
         {
             this._IUser = _IUser;
+            this.loggerRepository = loggerRepository;
         }
 
         [Route("~/User/Register")]
@@ -81,12 +83,26 @@ namespace MVCapp.Controllers
                     {
                         await Authenticate(user);
                         HttpContext.Response.Cookies.Append("id", user.Id.ToString());
-
+                        Logger logger = new Logger
+                        {
+                            Date = DateTime.Now,
+                            Information = "Пользователь зашел в систему",
+                            User = user
+                        };
+                        await loggerRepository.AddLogger(logger);
                         return Redirect("~/File/File");
                     }
                     else
                     {
                         ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                        User _user = await _IUser.GetUserByLoginAsync(loginModel);
+                        Logger logger = new Logger
+                        {
+                            Date = DateTime.Now,
+                            Information = "Пользователь ввел неккоректный логин и(или) пароль",
+                            User= _user
+                        };
+                        await loggerRepository.AddLogger(logger);
                     }
                 }
                 catch (NotFoundException)
