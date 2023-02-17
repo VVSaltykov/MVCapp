@@ -13,8 +13,14 @@ namespace MVCapp.Repositories
         {
             this.applicationContext = applicationContext;
         }
-        public async Task AddLogger(Logger logger)
+        public async Task AddLogger(string information, User user)
         {
+            Logger logger = new Logger
+            {
+                Date = DateTime.Now,
+                Information = information,
+                User = user
+            };
             applicationContext.Loggers.Add(logger);
             await applicationContext.SaveChangesAsync();
         }

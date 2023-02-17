@@ -83,26 +83,14 @@ namespace MVCapp.Controllers
                     {
                         await Authenticate(user);
                         HttpContext.Response.Cookies.Append("id", user.Id.ToString());
-                        Logger logger = new Logger
-                        {
-                            Date = DateTime.Now,
-                            Information = "Пользователь зашел в систему",
-                            User = user
-                        };
-                        await loggerRepository.AddLogger(logger);
+                        await loggerRepository.AddLogger("Пользователь зашел в систему", user);
                         return Redirect("~/File/File");
                     }
                     else
                     {
                         ModelState.AddModelError("", "Некорректные логин и(или) пароль");
                         User _user = await _IUser.GetUserByLoginAsync(loginModel);
-                        Logger logger = new Logger
-                        {
-                            Date = DateTime.Now,
-                            Information = "Пользователь ввел неккоректный логин и(или) пароль",
-                            User= _user
-                        };
-                        await loggerRepository.AddLogger(logger);
+                        await loggerRepository.AddLogger("Пользователь ввел некорректный логин и(или) пароль", user);
                     }
                 }
                 catch (NotFoundException)

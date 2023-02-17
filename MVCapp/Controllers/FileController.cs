@@ -39,13 +39,7 @@ namespace MVCapp.Controllers
                 string login = HttpContext.User.Identity.Name;
                 var user = await _IUser.GetUserByLoginAsync(login);
                 await fileRepository.Upload(uploadFile);
-                Logger logger = new Logger
-                {
-                    Date = DateTime.Now,
-                    Information = "Пользователь добавил файл",
-                    User = user
-                };
-                await loggerRepository.AddLogger(logger);
+                await loggerRepository.AddLogger("Пользователь добавил файл", user);
             }
             return RedirectToAction("File");
         }
