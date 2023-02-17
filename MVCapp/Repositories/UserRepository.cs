@@ -51,5 +51,10 @@ namespace ProMVC.Repositories
             User user = await appContext.Users.FirstOrDefaultAsync(u => u.Login == loginModel.Login);
             return user;
         }
+        public async Task<User> GetUserByLoginAsync(string login)
+        {
+            User user = await appContext.Users.FirstOrDefaultAsync(u => u.Login == login);
+            return user;
+        }
     }
 }

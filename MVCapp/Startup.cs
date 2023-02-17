@@ -52,6 +52,7 @@ namespace MVCapp
             app.UseRouting();
             app.UseAuthorization();
             app.UseAuthentication();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

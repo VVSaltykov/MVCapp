@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MVCapp.Interfaces;
+using MVCapp.Models;
 using MVCapp.Repositories;
+using ProMVC.Repositories;
 
 namespace MVCapp.Controllers
 {
@@ -8,14 +12,17 @@ namespace MVCapp.Controllers
         private readonly ApplicationContext applicationContext;
         IWebHostEnvironment _appEnvironment;
         private readonly FileRepository fileRepository;
-        private static Random random = new Random();
+        private readonly LoggerRepository loggerRepository;
+        private readonly IUser _IUser;
 
 
-        public FileController(FileRepository fileRepository, ApplicationContext context, IWebHostEnvironment appEnvironment)
+        public FileController(FileRepository fileRepository, ApplicationContext context, IWebHostEnvironment appEnvironment, LoggerRepository loggerRepository, IUser _IUser)
         {
             this.fileRepository = fileRepository;
             _appEnvironment = appEnvironment;
             applicationContext = context;
+            this.loggerRepository = loggerRepository;
+            this._IUser = _IUser;
         }
 
         [HttpGet]
@@ -29,7 +36,16 @@ namespace MVCapp.Controllers
         {
             if (uploadFile != null)
             {
+                string login = HttpContext.User.Identity.Name;
+                var user = await _IUser.GetUserByLoginAsync(login);
                 await fileRepository.Upload(uploadFile);
+                Logger logger = new Logger
+                {
+                    Date = DateTime.Now,
+                    Information = "Пользователь добавил файл",
+                    User = user
+                };
+                await loggerRepository.AddLogger(logger);
             }
             return RedirectToAction("File");
         }

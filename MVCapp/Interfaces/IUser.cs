@@ -9,6 +9,12 @@ namespace MVCapp.Interfaces
         /// </summary>
         /// <param name="login"></param>
         /// <returns></returns>
+        Task<User> GetUserByLoginAsync(string login);
+        /// <summary>
+        /// Get user by login
+        /// </summary>
+        /// <param name="loginModel"></param>
+        /// <returns></returns>
         Task<User> GetUserByLoginAsync(LoginModel loginModel);
         /// <summary>
         /// Add user to database
