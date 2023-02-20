@@ -2,7 +2,7 @@
 
 namespace MVCapp.Models
 {
-    public class Logger
+    public class EventLog
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }

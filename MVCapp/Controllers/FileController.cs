@@ -12,16 +12,16 @@ namespace MVCapp.Controllers
         private readonly ApplicationContext applicationContext;
         IWebHostEnvironment _appEnvironment;
         private readonly FileRepository fileRepository;
-        private readonly LoggerRepository loggerRepository;
+        private readonly EventLogRepository eventLogRepository;
         private readonly IUser _IUser;
 
 
-        public FileController(FileRepository fileRepository, ApplicationContext context, IWebHostEnvironment appEnvironment, LoggerRepository loggerRepository, IUser _IUser)
+        public FileController(FileRepository fileRepository, ApplicationContext context, IWebHostEnvironment appEnvironment, EventLogRepository eventLogRepository, IUser _IUser)
         {
             this.fileRepository = fileRepository;
             _appEnvironment = appEnvironment;
             applicationContext = context;
-            this.loggerRepository = loggerRepository;
+            this.eventLogRepository = eventLogRepository;
             this._IUser = _IUser;
         }
 
@@ -39,7 +39,7 @@ namespace MVCapp.Controllers
                 string login = HttpContext.User.Identity.Name;
                 var user = await _IUser.GetUserByLoginAsync(login);
                 await fileRepository.Upload(uploadFile);
-                await loggerRepository.AddLogger("Пользователь добавил файл", user);
+                await eventLogRepository.AddLogger("Пользователь добавил файл", user);
             }
             return RedirectToAction("File");
         }

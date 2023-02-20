@@ -8,7 +8,7 @@ namespace MVCapp
     {
         public DbSet<User> Users { get; set; }
         public DbSet<File> Files { get; set; }
-        public DbSet<Logger> Loggers { get; set; }
+        public DbSet<EventLog> EventLogs { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)

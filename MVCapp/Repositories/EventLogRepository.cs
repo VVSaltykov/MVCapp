@@ -1,27 +1,26 @@
 ﻿using Microsoft.Identity.Client;
 using MVCapp.Migrations;
 using MVCapp.Models;
-using Logger = MVCapp.Models.Logger;
 
 namespace MVCapp.Repositories
 {
-    public class LoggerRepository
+    public class EventLogRepository
     {
         private readonly ApplicationContext applicationContext;
         
-        public LoggerRepository(ApplicationContext applicationContext)
+        public EventLogRepository(ApplicationContext applicationContext)
         {
             this.applicationContext = applicationContext;
         }
         public async Task AddLogger(string information, User user)
         {
-            Logger logger = new Logger
+            EventLog eventLog = new EventLog
             {
                 Date = DateTime.Now,
                 Information = information,
                 User = user
             };
-            applicationContext.Loggers.Add(logger);
+            applicationContext.EventLogs.Add(eventLog);
             await applicationContext.SaveChangesAsync();
         }
     }

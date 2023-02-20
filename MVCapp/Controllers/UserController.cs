@@ -15,11 +15,11 @@ namespace MVCapp.Controllers
     public class UserController : Controller
     {
         private readonly IUser _IUser;
-        private readonly LoggerRepository loggerRepository;
-        public UserController(IUser _IUser, LoggerRepository loggerRepository)
+        private readonly EventLogRepository eventLogRepository;
+        public UserController(IUser _IUser, EventLogRepository eventLogRepository)
         {
             this._IUser = _IUser;
-            this.loggerRepository = loggerRepository;
+            this.eventLogRepository = eventLogRepository;
         }
 
         [Route("~/User/Register")]
@@ -83,14 +83,14 @@ namespace MVCapp.Controllers
                     {
                         await Authenticate(user);
                         HttpContext.Response.Cookies.Append("id", user.Id.ToString());
-                        await loggerRepository.AddLogger("Пользователь зашел в систему", user);
+                        await eventLogRepository.AddLogger("Пользователь зашел в систему", user);
                         return Redirect("~/File/File");
                     }
                     else
                     {
                         ModelState.AddModelError("", "Некорректные логин и(или) пароль");
                         User _user = await _IUser.GetUserByLoginAsync(loginModel);
-                        await loggerRepository.AddLogger("Пользователь ввел некорректный логин и(или) пароль", user);
+                        await eventLogRepository.AddLogger("Пользователь ввел некорректный логин и(или) пароль", user);
                     }
                 }
                 catch (NotFoundException)

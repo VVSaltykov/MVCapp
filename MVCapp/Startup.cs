@@ -38,10 +38,8 @@ namespace MVCapp
                 options.EnableEndpointRouting = false;
             });
             services.AddTransient<IUser, UserRepository>();
-            services.AddTransient<UserController>();
             services.AddTransient<FileRepository>();
-            services.AddTransient<FileController>();
-            services.AddTransient<LoggerRepository>();
+            services.AddTransient<EventLogRepository>();
         }
 
         public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
