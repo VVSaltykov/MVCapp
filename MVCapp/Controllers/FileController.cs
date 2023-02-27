@@ -28,7 +28,8 @@ namespace MVCapp.Controllers
         [HttpGet]
         public IActionResult File()
         {
-            return View(applicationContext.Files.ToList());
+            var tuple = (applicationContext.Files.ToList(), applicationContext.Users);
+            return View(tuple);
         }
 
         [HttpPost]

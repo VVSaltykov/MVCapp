@@ -1,5 +1,5 @@
 ﻿@using System.Web.Helpers
-@model IEnumerable<MVCapp.Models.File>
+@model Tuple<IEnumerable<MVCapp.Models.File>, MVCapp.Models.User>
 @{
     ViewData["Title"] = "Добавление файла";
 }
@@ -12,7 +12,7 @@
 
 <p style="margin-top: 50px">List of Files</p>
 <ul>
-	@foreach (var item in Model)
+	@foreach (var item in Model.Item1)
 	{
 		<li>
 			<a asp-controller="File" asp-action="Download"
@@ -30,9 +30,16 @@
 			}
 			else
 			{
-				<form asp-controller="File" asp-action="Recover" asp-route-path="@item.Path">
-					<input type="submit" value="Восстановить" />
-				</form>
+				@if (Model.Item2.Role == MVCapp.Definitions.Role.ADMIN)
+				{
+					<form asp-controller="File" asp-action="Recover" asp-route-path="@item.Path">
+						<input type="submit" value="Восстановить" />
+					</form>
+				}
+				else
+				{
+					<div>Файл удален.</div>
+				}
 			}
 		</li>
 	}
