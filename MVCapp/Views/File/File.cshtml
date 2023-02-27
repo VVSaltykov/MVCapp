@@ -17,8 +17,23 @@
 		<li>
 			<a asp-controller="File" asp-action="Download"
 			   asp-route-path="@item.Path">
-				@item.FileName
+				@if(item.DeleteStatus == 0)
+				{
+					@item.FileName 
+				}
 			</a>
+			@if (item.DeleteStatus == 0)
+			{
+				<form asp-controller="File" asp-action="Delete" asp-route-path="@item.Path" >
+					<input type="submit" value="Удалить"/>
+				</form>
+			}
+			else
+			{
+				<form asp-controller="File" asp-action="Recover" asp-route-path="@item.Path">
+					<input type="submit" value="Восстановить" />
+				</form>
+			}
 		</li>
 	}
 </ul>

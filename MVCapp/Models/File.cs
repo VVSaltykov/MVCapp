@@ -9,7 +9,7 @@ namespace MVCapp.Models
         [Key]
         public int FileId { get; set; }
         public string? FileName { get; set; }
-        //[Display(Name = "")]
         public string? Path { get; set; }
+        public int? DeleteStatus { get; set; } = 0;
     }
 }

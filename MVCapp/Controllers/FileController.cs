@@ -59,5 +59,19 @@ namespace MVCapp.Controllers
             memory.Position = 0;
             return File(memory, fileRepository.GetContentType(_path), Path.GetFileName(file.FileName));
         }
+        public async Task<IActionResult> Delete(string path)
+        {
+            var file = await fileRepository.GetFileAsync(path);
+            file.DeleteStatus = 1;
+            await applicationContext.SaveChangesAsync();
+            return RedirectToAction("File");
+        }
+        public async Task<IActionResult> Recover(string path)
+        {
+			var file = await fileRepository.GetFileAsync(path);
+			file.DeleteStatus = 0;
+			await applicationContext.SaveChangesAsync();
+			return RedirectToAction("File");
+		}
     }
 }
