@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MVCapp.Interfaces;
 using MVCapp.Models;
 using MVCapp.Repositories;
 using ProMVC.Repositories;
+using System.Security.Claims;
+using File = MVCapp.Models.File;
 
 namespace MVCapp.Controllers
 {
@@ -28,7 +31,8 @@ namespace MVCapp.Controllers
         [HttpGet]
         public IActionResult File()
         {
-            var tuple = (applicationContext.Files.ToList(), applicationContext.Users);
+            var user = applicationContext.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name);
+			var tuple = Tuple.Create<List<File>, User>(applicationContext.Files.ToList(), user);
             return View(tuple);
         }
 
