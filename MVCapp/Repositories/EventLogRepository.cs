@@ -1,6 +1,7 @@
 ﻿using Microsoft.Identity.Client;
 using MVCapp.Migrations;
 using MVCapp.Models;
+using System.Net;
 
 namespace MVCapp.Repositories
 {
@@ -18,10 +19,27 @@ namespace MVCapp.Repositories
             {
                 Date = DateTime.Now,
                 Information = information,
+                IPAddress = await GetUserIPAddress(),
                 User = user
             };
             applicationContext.EventLogs.Add(eventLog);
             await applicationContext.SaveChangesAsync();
         }
+        public async Task<string> GetUserIPAddress()
+        {
+			string IPAddress = "";
+			IPHostEntry Host = default(IPHostEntry);
+			string Hostname = null;
+			Hostname = System.Environment.MachineName;
+			Host = Dns.GetHostEntry(Hostname);
+			foreach (IPAddress IP in Host.AddressList)
+			{
+				if (IP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+				{
+					IPAddress = Convert.ToString(IP);
+				}
+			}
+            return IPAddress;
+		}
     }
 }

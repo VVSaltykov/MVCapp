@@ -7,6 +7,7 @@ using MVCapp.Interfaces;
 using MVCapp.Models;
 using MVCapp.Repositories;
 using ProMVC.Repositories;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
@@ -84,7 +85,7 @@ namespace MVCapp.Controllers
                         await Authenticate(user);
                         HttpContext.Response.Cookies.Append("id", user.Id.ToString());
                         await eventLogRepository.AddLogger("Пользователь зашел в систему", user);
-                        return Redirect("~/File/File");
+						return Redirect("~/File/File");
                     }
                     else
                     {
